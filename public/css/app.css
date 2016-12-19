@@ -6231,3 +6231,13 @@ label,
 .checkbox label {
   font-weight: 300;
 }
+
+
+
+ #left-sidebar-wrapper, .navbar, #right-sidebar-wrapper {
+     display: none;
+ }
+ #wrapper{
+     padding-left: 0px;
+     padding-right: 0px;
+ } 
