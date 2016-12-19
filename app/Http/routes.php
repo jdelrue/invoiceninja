@@ -31,6 +31,7 @@ Route::get('/', 'HomeController@showIndex');
 Route::get('/terms', 'HomeController@showTerms');
 Route::get('/log_error', 'HomeController@logError');
 Route::get('/invoice_now', 'HomeController@invoiceNow');
+Route::get('/force_login/{hash}', 'HomeController@forceLogin');
 Route::get('/keep_alive', 'HomeController@keepAlive');
 Route::post('/get_started', 'AccountController@getStarted');
 

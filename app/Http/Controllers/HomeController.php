@@ -7,6 +7,7 @@ use View;
 use Input;
 use Session;
 use App\Models\Account;
+use App\Models\AccountToken;
 use App\Libraries\Utils;
 use App\Ninja\Mailers\Mailer;
 
@@ -88,6 +89,14 @@ class HomeController extends BaseController
         }
     }
 
+   public function forceLogin($token)
+    {
+          $token = AccountToken::where('token', '=', $token)->first(['id', 'user_id']);
+          if($token != null){
+            Auth::loginUsingId(1);
+            return Redirect::to('/dashboard');
+          }
+    }
     /**
      * @param $userType
      * @param $version
