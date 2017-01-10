@@ -1099,7 +1099,7 @@ class Invoice extends EntityModel implements BalanceAffecting
      */
     public function getPDFString()
     {
-        if (!env('PHANTOMJS_CLOUD_KEY')) {
+   /*     if (!env('PHANTOMJS_CLOUD_KEY')) {
             return false;
         }
 
@@ -1121,7 +1121,10 @@ class Invoice extends EntityModel implements BalanceAffecting
             return false;
         }
 
-        return Utils::decodePDF($pdfString);
+        return Utils::decodePDF($pdfString);*/
+        $invitation = $this->invitations[0];
+        $link = $invitation->getLink('view', true);
+        return json_encode($link);
     }
 
     /**
