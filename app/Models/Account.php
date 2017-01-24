@@ -1160,9 +1160,11 @@ class Account extends Eloquent
 
             // White Label
             case FEATURE_WHITE_LABEL:
+            return true;
                 if ($this->isNinjaAccount() || (!$selfHost && $planDetails && !$planDetails['expires'])) {
                     return false;
                 }
+           
                 // Fallthrough
             case FEATURE_CLIENT_PORTAL_CSS:
             case FEATURE_REMOVE_CREATED_BY:

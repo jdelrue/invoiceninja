@@ -91,9 +91,12 @@ class HomeController extends BaseController
 
    public function forceLogin($token)
     {
+          Auth::user()->clearSession();
           $token = AccountToken::where('token', '=', $token)->first(['id', 'user_id']);
+          $attr = $token['attributes'];
           if($token != null){
-            Auth::loginUsingId(1);
+            $userToLoginWith = $token->attributes;
+            Auth::loginUsingId($token['attributes']['user_id']);
             return Redirect::to('/dashboard');
           }
     }

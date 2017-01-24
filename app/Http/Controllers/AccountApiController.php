@@ -15,6 +15,7 @@ use App\Ninja\Transformers\UserAccountTransformer;
 use App\Events\UserSignedUp;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\UpdateAccountRequest;
+use App\Models\AccountToken;
 
 class AccountApiController extends BaseAPIController
 {
@@ -38,12 +39,15 @@ class AccountApiController extends BaseAPIController
     {
 
         $account = $this->accountRepo->create($request->first_name, $request->last_name, $request->email, $request->password);
+       
+       
         $user = $account->users()->first();
 
         Auth::login($user, true);
         event(new UserSignedUp());
+ 
 
-        return $this->processLogin($request);
+        return $this->processLogin($request, true);
     }
 
     public function login(Request $request)
@@ -56,28 +60,37 @@ class AccountApiController extends BaseAPIController
         }
     }
 
-    private function processLogin(Request $request)
+    private function processLogin(Request $request, $register = false)
     {
         // Create a new token only if one does not already exist
         $user = Auth::user();
         $this->accountRepo->createTokens($user, $request->token_name);
 
         $users = $this->accountRepo->findUsers($user, 'account.account_tokens');
+
         $transformer = new UserAccountTransformer($user->account, $request->serializer, $request->token_name);
         $data = $this->createCollection($users, $transformer, 'user_account');
 
+        if($register){ //Added to get API tokens on creation of new company
+            $id =  $user['attributes']['account_id'];
+            $token = AccountToken::where('account_id', '=', $id);
+            $tokenHash = $token->first();
+            $hash = $tokenHash['attributes']['token'];
+            $data[0]['api_token'] = $hash;
+        }
         return $this->response($data);
     }
 
     public function show(Request $request)
     {
         $account = Auth::user()->account;
+       
         $updatedAt = $request->updated_at ? date('Y-m-d H:i:s', $request->updated_at) : false;
 
         $transformer = new AccountTransformer(null, $request->serializer);
         $account->load(array_merge($transformer->getDefaultIncludes(), ['projects.client']));
         $account = $this->createItem($account, $transformer, 'account');
-
+            
         return $this->response($account);
     }
 
